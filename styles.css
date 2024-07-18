@@ -9,11 +9,22 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f2f2f2;
   line-height: 1.6;
-  padding: 20px;
+  padding: 0px;
+}
+
+#post {
+  position: sticky;
+}
+#home-link {
+  color: white;
+}
+
+#home-link a {
+  text-decoration: none;
 }
 
 header {
-  background-color: #333;
+  background-color: #0d0583;
   color: white;
   padding: 10px 20px;
   position: sticky;
@@ -51,6 +62,16 @@ button {
 
 button:hover {
   background-color: #777;
+}
+
+#search-form {
+  display: flex;
+  align-items: center;
+}
+
+#search-input {
+  padding: 5px;
+  margin-right: 10px;
 }
 
 main {
@@ -148,4 +169,84 @@ main {
 
 .edit-textarea {
   height: 100px;
+}
+
+/* Style for buttons */
+.edit-btn, .delete-btn, .favorite-btn {
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.edit-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #45a049;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #e41e26;
+}
+
+.favorite-btn {
+  background-color: white;
+  color: white;
+}
+
+.favorite-btn:hover {
+  background-color: white;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+  }
+
+  #nav-links {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #nav-links.show {
+    display: flex;
+  }
+
+  .user-post {
+    margin: 10px;
+    width: 100%;
+  }
+
+  main {
+    padding: 0;
+  }
+}
+
+@media (min-width: 769px) {
+  #nav-links {
+    display: flex;
+  }
+
+  #nav-links.show {
+    display: flex;
+  }
+
+  .user-post {
+    margin: 10px 2.5%;
+    width: 45%;
+    display: inline-block;
+    vertical-align: top;
+  }
 }

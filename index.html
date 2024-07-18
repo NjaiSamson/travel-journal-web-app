@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Blog</title>
+    <title>Travel Journal</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Travel Blog</h1>
-        <button id="menu-toggle">Menu</button>
-        <nav id="nav-links" class="hide">
-            <a href="#" id="home-link">Home</a>
-            <a href="#" id="favorite-link">Favorite</a> <!-- Added Favorite link -->
-            <a href="#">About</a>
-            <a href="#">Contact</a>
-        </nav>
+        <div class="header-container">
+            <h1>Online Travel Journal</h1>
+            <p id="menu-toggle"><a href="#" id="home-link">Home</a></p>
+            <nav id="nav-links" class="hide">
+                
+            </nav>
+            <form id="search-form">
+                <input type="text" id="search-input" placeholder="Search by place, city or country">
+                <button type="submit">Search</button>
+            </form>
+        </div>
     </header>
     <main>
         <button id="post">New Post</button>
