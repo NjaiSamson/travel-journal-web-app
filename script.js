@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const postContainer = document.getElementById("post-container");
   const menuToggle = document.getElementById("menu-toggle");
   const navLinks = document.getElementById("nav-links");
+  const searchForm = document.getElementById("search-form");
+  const searchInput = document.getElementById("search-input");
 
   postButton.addEventListener("click", function () {
       postForm.classList.toggle("show");
@@ -250,4 +252,31 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   fetchData();
+
+  searchForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const searchTerm = searchInput.value.toLowerCase();
+
+      // Clear previous search results
+      postContainer.innerHTML = "";
+
+      // Fetch data and filter posts based on search term
+      fetch("http://localhost:3000/posts")
+      .then(response => response.json())
+      .then(data => {
+          data.forEach(postData => {
+              const { placeName, countryName, cityName } = postData;
+              if (placeName.toLowerCase().includes(searchTerm) ||
+                  countryName.toLowerCase().includes(searchTerm) ||
+                  cityName.toLowerCase().includes(searchTerm)) {
+                  renderUserPost(postData);
+              }
+          });
+      })
+      .catch(error => {
+          console.error("Error fetching data:", error);
+          alert("Error fetching data");
+      });
+  });
 });
