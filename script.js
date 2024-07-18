@@ -6,6 +6,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const navLinks = document.getElementById("nav-links");
   const searchForm = document.getElementById("search-form");
   const searchInput = document.getElementById("search-input");
+  const homeLink = document.querySelector('nav a[href="#"]');
+
+  let favoritePosts = [];
 
   postButton.addEventListener("click", function () {
       postForm.classList.toggle("show");
@@ -63,6 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function renderUserPost(postData) {
       const userPost = document.createElement("div");
       userPost.classList.add("user-post");
+      userPost.dataset.postId = postData.id; // Assuming your postData includes an 'id'
 
       const locationDetails = document.createElement("div");
       locationDetails.classList.add("location-details");
@@ -113,8 +117,20 @@ document.addEventListener("DOMContentLoaded", function () {
           handleDelete(postData.id, userPost);
       });
 
+      const favoriteButton = document.createElement("button");
+      favoriteButton.classList.add("buttons");
+      favoriteButton.textContent = "Favorite";
+      favoriteButton.addEventListener("click", function () {
+          toggleFavorite(postData);
+      });
+
+      if (favoritePosts.some(post => post.id === postData.id)) {
+          favoriteButton.textContent = "Unfavorite";
+      }
+
       editSection.appendChild(editButton);
       editSection.appendChild(deleteButton);
+      editSection.appendChild(favoriteButton);
 
       userPost.appendChild(locationDetails);
       userPost.appendChild(userPhoto);
@@ -126,7 +142,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function handleEdit(postData, postElement) {
-      // Assuming there's an edit form with fields similar to the post form
+      // Remove any existing edit form
+      const existingEditForm = postElement.nextElementSibling;
+      if (existingEditForm && existingEditForm.classList.contains("edit-form")) {
+          existingEditForm.remove();
+          return;
+      }
+
+      // Create edit form
+      const editForm = createEditForm(postData);
+
+      // Insert edit form below the postElement
+      postElement.parentNode.insertBefore(editForm, postElement.nextSibling);
+  }
+
+  function createEditForm(postData) {
       const editForm = document.createElement("form");
       editForm.classList.add("edit-form");
 
@@ -137,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const submitButton = document.createElement("button");
       submitButton.type = "submit";
-      submitButton.textContent = "Save";
+      submitButton.textContent = "Update";
 
       editForm.appendChild(placeNameInput);
       editForm.appendChild(countryNameInput);
@@ -145,38 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
       editForm.appendChild(commentsInput);
       editForm.appendChild(submitButton);
 
-      // Replace current post with edit form
-      postElement.innerHTML = "";
-      postElement.appendChild(editForm);
-
-      editForm.addEventListener("submit", function (event) {
-          event.preventDefault();
-
-          const editedData = {
-              placeName: editForm.elements["placeName"].value,
-              countryName: editForm.elements["countryName"].value,
-              cityName: editForm.elements["cityName"].value,
-              comments: editForm.elements["comments"].value
-              // Ensure to handle photo update if necessary
-          };
-
-          fetch(`http://localhost:3000/posts/${postData.id}`, {
-              method: "PUT",
-              headers: {
-                  "Content-Type": "application/json"
-              },
-              body: JSON.stringify(editedData)
-          })
-          .then(response => response.json())
-          .then(updatedPostData => {
-              alert("Post updated successfully");
-              renderUserPost(updatedPostData);
-          })
-          .catch(error => {
-              console.error("Error updating post:", error);
-              alert("Error updating post");
-          });
-      });
+      return editForm;
   }
 
   function createInput(id, label, value) {
@@ -190,6 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
       inputElement.name = id;
       inputElement.value = value;
       inputElement.required = true;
+      inputElement.classList.add("edit-input"); // Adding edit-input class for styling
 
       const container = document.createElement("div");
       container.appendChild(labelElement);
@@ -208,6 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
       textareaElement.name = id;
       textareaElement.textContent = value;
       textareaElement.required = true;
+      textareaElement.classList.add("edit-textarea"); // Adding edit-textarea class for styling
 
       const container = document.createElement("div");
       container.appendChild(labelElement);
@@ -227,6 +228,8 @@ document.addEventListener("DOMContentLoaded", function () {
           if (response.ok) {
               alert("Post deleted successfully");
               postElement.remove();
+              // Remove from favorite posts if deleted
+              favoritePosts = favoritePosts.filter(post => post.id !== postId);
           } else {
               throw new Error("Failed to delete post");
           }
@@ -237,21 +240,41 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
-  function fetchData() {
-      fetch("http://localhost:3000/posts")
-      .then(response => response.json())
-      .then(data => {
-          data.forEach(postData => {
-              renderUserPost(postData);
-          });
-      })
-      .catch(error => {
-          console.error("Error fetching data:", error);
-          alert("Error fetching data");
-      });
+  function toggleFavorite(postData) {
+      const index = favoritePosts.findIndex(post => post.id === postData.id);
+
+      if (index === -1) {
+          // Add to favorites
+          favoritePosts.push(postData);
+      } else {
+          // Remove from favorites
+          favoritePosts.splice(index, 1);
+      }
+
+      // Update UI
+      updateFavoriteUI();
   }
 
-  fetchData();
+  function updateFavoriteUI() {
+      const postsToShow = favoritePosts.length > 0 ? favoritePosts : getAllPosts();
+      renderPosts(postsToShow);
+  }
+
+  function getAllPosts() {
+      return fetch("http://localhost:3000/posts")
+          .then(response => response.json())
+          .catch(error => {
+              console.error("Error fetching data:", error);
+              alert("Error fetching data");
+          });
+  }
+
+  function renderPosts(posts) {
+      postContainer.innerHTML = "";
+      posts.forEach(postData => renderUserPost(postData));
+  }
+
+  getAllPosts().then(data => renderPosts(data));
 
   searchForm.addEventListener("submit", function (event) {
       event.preventDefault();
@@ -262,8 +285,7 @@ document.addEventListener("DOMContentLoaded", function () {
       postContainer.innerHTML = "";
 
       // Fetch data and filter posts based on search term
-      fetch("http://localhost:3000/posts")
-      .then(response => response.json())
+      getAllPosts()
       .then(data => {
           data.forEach(postData => {
               const { placeName, countryName, cityName } = postData;
@@ -278,5 +300,13 @@ document.addEventListener("DOMContentLoaded", function () {
           console.error("Error fetching data:", error);
           alert("Error fetching data");
       });
+
+      // Reset search input
+      searchInput.value = "";
+  });
+
+  homeLink.addEventListener("click", function (event) {
+      event.preventDefault();
+      getAllPosts().then(data => renderPosts(data));
   });
 });
