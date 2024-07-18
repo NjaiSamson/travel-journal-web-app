@@ -3,12 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Journal App</title>
-    <link rel="stylesheet" href="./styles.css">
+    <title>Travel Blog</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Journalfy your Travels</h1>
-
-    <script src="./script.js"></script>    
+    <header>
+        <h1>Travel Blog</h1>
+        <button id="menu-toggle">Menu</button>
+        <nav id="nav-links" class="hide">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+    <main>
+        <button id="post">New Post</button>
+        <form class="post-form hide">
+            <label for="placeName">Place Name:</label>
+            <input type="text" id="placeName" name="placeName" required>
+            <label for="countryName">Country Name:</label>
+            <input type="text" id="countryName" name="countryName" required>
+            <label for="cityName">City Name:</label>
+            <input type="text" id="cityName" name="cityName" required>
+            <label for="photo">Photo:</label>
+            <input type="file" id="photo" name="photo" accept="image/*" required>
+            <label for="comments">Comments:</label>
+            <textarea id="comments" name="comments" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="post-container"></div>
+    </main>
+    <script src="script.js"></script>
 </body>
 </html>
