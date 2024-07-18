@@ -123,9 +123,103 @@ document.addEventListener("DOMContentLoaded", function () {
       postContainer.appendChild(userPost);
   }
 
+  function handleEdit(postData, postElement) {
+      // Assuming there's an edit form with fields similar to the post form
+      const editForm = document.createElement("form");
+      editForm.classList.add("edit-form");
+
+      const placeNameInput = createInput("placeName", "Place Name", postData.placeName);
+      const countryNameInput = createInput("countryName", "Country Name", postData.countryName);
+      const cityNameInput = createInput("cityName", "City Name", postData.cityName);
+      const commentsInput = createTextarea("comments", "Comments", postData.comments);
+
+      const submitButton = document.createElement("button");
+      submitButton.type = "submit";
+      submitButton.textContent = "Save";
+
+      editForm.appendChild(placeNameInput);
+      editForm.appendChild(countryNameInput);
+      editForm.appendChild(cityNameInput);
+      editForm.appendChild(commentsInput);
+      editForm.appendChild(submitButton);
+
+      // Replace current post with edit form
+      postElement.innerHTML = "";
+      postElement.appendChild(editForm);
+
+      editForm.addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const editedData = {
+              placeName: editForm.elements["placeName"].value,
+              countryName: editForm.elements["countryName"].value,
+              cityName: editForm.elements["cityName"].value,
+              comments: editForm.elements["comments"].value
+              // Ensure to handle photo update if necessary
+          };
+
+          fetch(`http://localhost:3000/posts/${postData.id}`, {
+              method: "PUT",
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify(editedData)
+          })
+          .then(response => response.json())
+          .then(updatedPostData => {
+              alert("Post updated successfully");
+              renderUserPost(updatedPostData);
+          })
+          .catch(error => {
+              console.error("Error updating post:", error);
+              alert("Error updating post");
+          });
+      });
+  }
+
+  function createInput(id, label, value) {
+      const labelElement = document.createElement("label");
+      labelElement.for = id;
+      labelElement.textContent = `${label}:`;
+
+      const inputElement = document.createElement("input");
+      inputElement.type = "text";
+      inputElement.id = id;
+      inputElement.name = id;
+      inputElement.value = value;
+      inputElement.required = true;
+
+      const container = document.createElement("div");
+      container.appendChild(labelElement);
+      container.appendChild(inputElement);
+
+      return container;
+  }
+
+  function createTextarea(id, label, value) {
+      const labelElement = document.createElement("label");
+      labelElement.for = id;
+      labelElement.textContent = `${label}:`;
+
+      const textareaElement = document.createElement("textarea");
+      textareaElement.id = id;
+      textareaElement.name = id;
+      textareaElement.textContent = value;
+      textareaElement.required = true;
+
+      const container = document.createElement("div");
+      container.appendChild(labelElement);
+      container.appendChild(textareaElement);
+
+      return container;
+  }
+
   function handleDelete(postId, postElement) {
       fetch(`http://localhost:3000/posts/${postId}`, {
-          method: "DELETE"
+          method: "DELETE",
+          headers: {
+              "Content-Type": "application/json"
+          }
       })
       .then(response => {
           if (response.ok) {
