@@ -124,12 +124,6 @@ document.addEventListener("DOMContentLoaded", function () {
         showEditForm(post);
       });
 
-      const deleteButton = document.createElement("button");
-      deleteButton.classList.add("delete-btn");
-      deleteButton.textContent = "Delete";
-      deleteButton.addEventListener("click", function () {
-        deletePost(post.id);
-      });
 
       const favoriteButton = document.createElement("button");
       favoriteButton.classList.add("favorite-btn");
@@ -137,6 +131,15 @@ document.addEventListener("DOMContentLoaded", function () {
       favoriteButton.addEventListener("click", function () {
         toggleFavorite(post);
       });
+
+      const deleteButton = document.createElement("button");
+      deleteButton.classList.add("delete-btn");
+      deleteButton.textContent = "Delete";
+      deleteButton.addEventListener("click", function () {
+        deletePost(post.id);
+      });
+
+     
 
       editSection.appendChild(editButton);
       editSection.appendChild(deleteButton);
