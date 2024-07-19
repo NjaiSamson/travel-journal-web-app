@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
     renderPosts(postsData);
   });
 
-  searchForm.addEventListener("submit", function (event) {
+  searchForm.addEventListener("input", function (event) {
     event.preventDefault();
     const query = searchInput.value.toLowerCase();
     const filteredPosts = postsData.filter(post =>
@@ -103,6 +103,11 @@ document.addEventListener("DOMContentLoaded", function () {
       userPhoto.classList.add("user-photo");
       const img = document.createElement("img");
       img.src = post.photo;
+      img.addEventListener('mouseover', () => {
+        img.classList.add("zoom-image");
+        img.classList.add("zoon-in");
+      });
+      img.addEventList
       userPhoto.appendChild(img);
 
       const postDescription = document.createElement("div");
